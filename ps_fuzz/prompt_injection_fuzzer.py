@@ -13,6 +13,7 @@ import colorama
 from pydantic import ValidationError
 import logging
 logger = logging.getLogger(__name__)
+OPENAI_API_KEY = 'CHANGE_ME' # dummy value
 
 RESET = colorama.Style.RESET_ALL
 LIGHTBLUE = colorama.Fore.LIGHTBLUE_EX
@@ -25,8 +26,8 @@ ORANGE = colorama.Fore.LIGHTYELLOW_EX
 
 def _build_client_kwargs(app_config: AppConfig, provider: str, model: str, temperature: float) -> dict:
     """Build kwargs for ClientLangChain based on provider and app config"""
-    kwargs = {'model': model, 'temperature': temperature}
-    
+    kwargs = {'model': model, 'temperature': temperature, 'openai_api_key': OPENAI_API_KEY}
+
     # Add provider-specific base URLs if configured
     if provider == 'ollama' and hasattr(app_config, 'ollama_base_url') and app_config.ollama_base_url:
         kwargs['ollama_base_url'] = app_config.ollama_base_url
@@ -205,12 +206,12 @@ def run_fuzzer(app_config: AppConfig):
     app_config.print_as_table()
     custom_benchmark = app_config.custom_benchmark
     target_system_prompt = app_config.system_prompt
-    try:
-        target_kwargs = _build_client_kwargs(app_config, app_config.target_provider, app_config.target_model, 0)
-        target_client = ClientLangChain(app_config.target_provider, **target_kwargs)
-    except (ModuleNotFoundError, ValidationError) as e:
-        logger.warning(f"Error accessing the Target LLM provider {app_config.target_provider} with model '{app_config.target_model}': {colorama.Fore.RED}{e}{colorama.Style.RESET_ALL}")
-        return
+    # try:
+    target_kwargs = _build_client_kwargs(app_config, app_config.target_provider, app_config.target_model, 0)
+    target_client = ClientLangChain(app_config.target_provider, **target_kwargs)
+    # except (ModuleNotFoundError, ValidationError) as e:
+    #     logger.warning(f"Error accessing the Target LLM provider {app_config.target_provider} with model '{app_config.target_model}': {colorama.Fore.RED}{e}{colorama.Style.RESET_ALL}")
+    #     return
     client_config = ClientConfig(target_client, [target_system_prompt], custom_benchmark=custom_benchmark)
 
     try:

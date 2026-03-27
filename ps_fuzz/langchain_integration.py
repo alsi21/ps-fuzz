@@ -87,8 +87,15 @@ def get_langchain_chat_models_info() -> Dict[str, Dict[str, Any]]:
     models: Dict[str, ChatModelInfo] = {}
     for model_cls_name in chat_models_module.__all__:
         if model_cls_name in EXCLUDED_CHAT_MODELS: continue
-        model_cls = chat_models_module.__dict__.get(model_cls_name)
-        if model_cls and issubclass(model_cls, BaseChatModel):
+        try:
+            model_cls = getattr(chat_models_module, model_cls_name)
+        except AttributeError:
+            continue
+        try:
+            is_chat_model = issubclass(model_cls, BaseChatModel)
+        except TypeError:
+            continue
+        if model_cls and is_chat_model:
             model_short_name = camel_to_snake(model_cls.__name__).replace('_chat', '').replace('chat_', '')
             # Introspect supported model parameters
             # Support both Pydantic v1 (__fields__) and v2 (model_fields)
