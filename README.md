@@ -31,10 +31,6 @@
 
 </div>
 
-<h3> Fork notes: </h3>
-
-May require a conversion tool, like [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) to run gguf models using Python backend.
-
 ---
 
 
