@@ -2,7 +2,7 @@
 set -e # Exit immediately in case of error, do not ignore errors
 
 echo "Installing required Python packaging tools ..."
-python -m pip install --upgrade pip setuptools wheel
+python -m pip install --upgrade pip setuptools==69.5.1 wheel
 
 echo "Cleaning up previous builds..."
 rm -rf build/ dist/ *.egg-info
